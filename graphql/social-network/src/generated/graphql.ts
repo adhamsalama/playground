@@ -1,4 +1,6 @@
 import { GraphQLResolveInfo } from 'graphql';
+import { IUser } from '../types/user';
+import { IPost } from '../types/post';
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
@@ -43,7 +45,7 @@ export type MutationCreateUserArgs = {
 
 export type Post = {
   __typename?: 'Post';
-  content: Scalars['String'];
+  content?: Maybe<Scalars['String']>;
   id: Scalars['ID'];
   title: Scalars['String'];
   user: User;
@@ -52,12 +54,27 @@ export type Post = {
 export type Query = {
   __typename?: 'Query';
   posts: Array<Maybe<Post>>;
+  search: Array<Maybe<SearchResult>>;
+  user?: Maybe<User>;
+  users: Array<Maybe<User>>;
 };
 
 
 export type QueryPostsArgs = {
   findTitle?: InputMaybe<Scalars['String']>;
 };
+
+
+export type QuerySearchArgs = {
+  query: Scalars['String'];
+};
+
+
+export type QueryUserArgs = {
+  id: Scalars['ID'];
+};
+
+export type SearchResult = Post | User;
 
 export type User = {
   __typename?: 'User';
@@ -146,9 +163,10 @@ export type ResolversTypes = {
   ID: ResolverTypeWrapper<Scalars['ID']>;
   CreateUserInput: CreateUserInput;
   Mutation: ResolverTypeWrapper<{}>;
-  Post: ResolverTypeWrapper<Post>;
+  Post: ResolverTypeWrapper<IPost>;
   Query: ResolverTypeWrapper<{}>;
-  User: ResolverTypeWrapper<User>;
+  SearchResult: ResolversTypes['Post'] | ResolversTypes['User'];
+  User: ResolverTypeWrapper<IUser>;
   AdditionalEntityFields: AdditionalEntityFields;
   Boolean: ResolverTypeWrapper<Scalars['Boolean']>;
 };
@@ -160,9 +178,10 @@ export type ResolversParentTypes = {
   ID: Scalars['ID'];
   CreateUserInput: CreateUserInput;
   Mutation: {};
-  Post: Post;
+  Post: IPost;
   Query: {};
-  User: User;
+  SearchResult: ResolversParentTypes['Post'] | ResolversParentTypes['User'];
+  User: IUser;
   AdditionalEntityFields: AdditionalEntityFields;
   Boolean: Scalars['Boolean'];
 };
@@ -220,7 +239,7 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
 };
 
 export type PostResolvers<ContextType = any, ParentType extends ResolversParentTypes['Post'] = ResolversParentTypes['Post']> = {
-  content?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  content?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   title?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   user?: Resolver<ResolversTypes['User'], ParentType, ContextType>;
@@ -229,6 +248,13 @@ export type PostResolvers<ContextType = any, ParentType extends ResolversParentT
 
 export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
   posts?: Resolver<Array<Maybe<ResolversTypes['Post']>>, ParentType, ContextType, Partial<QueryPostsArgs>>;
+  search?: Resolver<Array<Maybe<ResolversTypes['SearchResult']>>, ParentType, ContextType, RequireFields<QuerySearchArgs, 'query'>>;
+  user?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<QueryUserArgs, 'id'>>;
+  users?: Resolver<Array<Maybe<ResolversTypes['User']>>, ParentType, ContextType>;
+};
+
+export type SearchResultResolvers<ContextType = any, ParentType extends ResolversParentTypes['SearchResult'] = ResolversParentTypes['SearchResult']> = {
+  __resolveType: TypeResolveFn<'Post' | 'User', ParentType, ContextType>;
 };
 
 export type UserResolvers<ContextType = any, ParentType extends ResolversParentTypes['User'] = ResolversParentTypes['User']> = {
@@ -243,6 +269,7 @@ export type Resolvers<ContextType = any> = {
   Mutation?: MutationResolvers<ContextType>;
   Post?: PostResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
+  SearchResult?: SearchResultResolvers<ContextType>;
   User?: UserResolvers<ContextType>;
 };
 

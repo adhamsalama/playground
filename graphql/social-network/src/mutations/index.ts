@@ -4,7 +4,7 @@ import { createPostMutation } from "./post";
 
 export const mutations: Resolvers = {
   Mutation: {
-    createUser: creatUserMutation.Mutation?.createUser,
-    createPost: createPostMutation.Mutation?.createPost,
+    createUser: creatUserMutation.createUser,
+    createPost: createPostMutation.createPost,
   },
 };
