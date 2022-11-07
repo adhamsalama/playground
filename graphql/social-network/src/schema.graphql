@@ -1,0 +1,33 @@
+type User {
+  id: ID!
+  firstName: String!
+  lastName: String!
+  posts: [Post]!
+}
+
+type Post {
+  id: ID!
+  title: String!
+  content: String!
+  user: User!
+}
+
+type Query {
+  posts(findTitle: String): [Post]!
+}
+
+type Mutation {
+  createUser(input: CreateUserInput!): User!
+  createPost(input: CreatePostInput!): Post!
+}
+
+input CreateUserInput {
+  firstName: String!
+  lastName: String!
+}
+
+input CreatePostInput {
+  title: String!
+  content: String!
+  userId: ID!
+}
