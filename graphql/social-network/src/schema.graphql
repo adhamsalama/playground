@@ -1,0 +1,37 @@
+type User {
+  id: ID!
+  firstName: String!
+  lastName: String!
+  posts: [Post]!
+}
+
+type Post {
+  id: ID!
+  title: String!
+  content: String
+  user: User!
+}
+
+union SearchResult = Post | User
+type Query {
+  posts(findTitle: String): [Post]!
+  user(id: ID!): User
+  users: [User]!
+  search(query: String!): [SearchResult]!
+}
+
+type Mutation {
+  createUser(input: CreateUserInput!): User!
+  createPost(input: CreatePostInput!): Post!
+}
+
+input CreateUserInput {
+  firstName: String!
+  lastName: String!
+}
+
+input CreatePostInput {
+  title: String!
+  content: String!
+  userId: ID!
+}
