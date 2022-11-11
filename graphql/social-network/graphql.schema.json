@@ -84,7 +84,7 @@
         "fields": null,
         "inputFields": [
           {
-            "name": "firstName",
+            "name": "password",
             "description": null,
             "type": {
               "kind": "NON_NULL",
@@ -100,7 +100,7 @@
             "deprecationReason": null
           },
           {
-            "name": "lastName",
+            "name": "username",
             "description": null,
             "type": {
               "kind": "NON_NULL",
@@ -284,6 +284,18 @@
         "description": null,
         "fields": [
           {
+            "name": "getCurrentUser",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "OBJECT",
+              "name": "User",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "posts",
             "description": null,
             "args": [
@@ -445,22 +457,6 @@
         "description": null,
         "fields": [
           {
-            "name": "firstName",
-            "description": null,
-            "args": [],
-            "type": {
-              "kind": "NON_NULL",
-              "name": null,
-              "ofType": {
-                "kind": "SCALAR",
-                "name": "String",
-                "ofType": null
-              }
-            },
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
             "name": "id",
             "description": null,
             "args": [],
@@ -477,7 +473,7 @@
             "deprecationReason": null
           },
           {
-            "name": "lastName",
+            "name": "password",
             "description": null,
             "args": [],
             "type": {
@@ -507,6 +503,22 @@
                   "name": "Post",
                   "ofType": null
                 }
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "username",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
               }
             },
             "isDeprecated": false,

@@ -23,8 +23,8 @@ export type CreatePostInput = {
 };
 
 export type CreateUserInput = {
-  firstName: Scalars['String'];
-  lastName: Scalars['String'];
+  password: Scalars['String'];
+  username: Scalars['String'];
 };
 
 export type Mutation = {
@@ -53,6 +53,7 @@ export type Post = {
 
 export type Query = {
   __typename?: 'Query';
+  getCurrentUser?: Maybe<User>;
   posts: Array<Maybe<Post>>;
   search: Array<Maybe<SearchResult>>;
   user?: Maybe<User>;
@@ -78,10 +79,10 @@ export type SearchResult = Post | User;
 
 export type User = {
   __typename?: 'User';
-  firstName: Scalars['String'];
   id: Scalars['ID'];
-  lastName: Scalars['String'];
+  password: Scalars['String'];
   posts: Array<Maybe<Post>>;
+  username: Scalars['String'];
 };
 
 export type AdditionalEntityFields = {
@@ -247,6 +248,7 @@ export type PostResolvers<ContextType = any, ParentType extends ResolversParentT
 };
 
 export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
+  getCurrentUser?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
   posts?: Resolver<Array<Maybe<ResolversTypes['Post']>>, ParentType, ContextType, Partial<QueryPostsArgs>>;
   search?: Resolver<Array<Maybe<ResolversTypes['SearchResult']>>, ParentType, ContextType, RequireFields<QuerySearchArgs, 'query'>>;
   user?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<QueryUserArgs, 'id'>>;
@@ -258,10 +260,10 @@ export type SearchResultResolvers<ContextType = any, ParentType extends Resolver
 };
 
 export type UserResolvers<ContextType = any, ParentType extends ResolversParentTypes['User'] = ResolversParentTypes['User']> = {
-  firstName?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
-  lastName?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  password?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   posts?: Resolver<Array<Maybe<ResolversTypes['Post']>>, ParentType, ContextType>;
+  username?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
