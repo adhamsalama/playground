@@ -1,73 +1,42 @@
 import { Resolvers } from "../generated/graphql";
-import { Post } from "../models/post";
 import { User } from "../models/user";
 import { mutations } from "../mutations/index";
+import { Context } from "../types/context";
+import { IPost } from "../types/post";
+import { IUser } from "../types/user";
 
-export const resolvers: Resolvers = {
+export const resolvers: Resolvers<Context> = {
   Query: {
-    search: async (_, { query }) => {
-      const posts = await Post.find({
-        $or: [
-          {
-            title: query,
-          },
-          {
-            content: query,
-          },
-        ],
-      });
-      const users = await User.find({
-        $or: [
-          {
-            firstName: query,
-          },
-          {
-            lastName: query,
-          },
-        ],
-      });
-      // @ts-ignore
-      const result = posts.concat(users);
+    search: async (_, { query }, context) => {
+      const posts = await context.datasources.posts.search(query);
+      const users = await context.datasources.users.search(query);
+      const result: Array<IPost | IUser> = [...posts, ...users];
       return result;
     },
-    posts: async (_, __, context) => {
-      console.log({ _, __: context });
-      const posts = await Post.find();
-      return posts;
-    },
-    user: async (_, { id }) => {
-      const user = await User.findById(id);
-      if (!user) throw new Error("User not found");
-      return user;
-    },
-    users: async () => {
-      const users = await User.find();
-      return users;
-    },
+    posts: async (_, __, context) => context.datasources.posts.getAll(),
+    user: async (_, { id }, context) => context.datasources.users.findById(id),
+    users: async (_, __, context) => context.datasources.users.getAll(),
+    getCurrentUser: async (_, __, context) =>
+      context.user ? context.user : null,
   },
   Mutation: {
     createUser: mutations.Mutation?.createUser,
     createPost: mutations.Mutation?.createPost,
   },
   Post: {
-    user: async (post) => {
-      const user = await User.findById(post.user);
+    user: async (post, _, context) => {
+      const user = await context.datasources.users.findById(post.user);
       if (!user) throw new Error("Error custom resolving post's user");
       return user;
     },
   },
   User: {
-    posts: async (user) => {
-      const posts = await Post.find({ user });
-      return posts;
-    },
+    posts: async (user, _, context) =>
+      context.datasources.posts.getByUserId(user.id),
   },
   SearchResult: {
     __resolveType(searchResult) {
-      if (searchResult instanceof User) {
-        return "User";
-      }
-      return "Post";
+      return searchResult instanceof User ? "User" : "Post";
     },
   },
 };

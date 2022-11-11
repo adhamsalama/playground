@@ -7,8 +7,15 @@ import cors from "cors";
 import mongoose from "mongoose";
 import { readFileSync } from "fs";
 import { resolvers } from "./resolvers/index";
+import { Context } from "./types/context";
+import { User } from "./models/user";
+import jwt from "jsonwebtoken";
+import { Post } from "./models/post";
+import { UserDataSource } from "./datasources/user";
+import { PostDataSource } from "./datasources/post";
 
 async function start() {
+  process.env.JWT_SECRET = "secret";
   const typeDefs = readFileSync("src/schema.graphql", "utf-8");
 
   const app = express();
@@ -16,11 +23,15 @@ async function start() {
   const httpServer = http.createServer(app);
 
   // Set up Apollo Server
-  const server = new ApolloServer<{
-    headers: IncomingHttpHeaders;
-  }>({
+  const server = new ApolloServer<Context>({
     typeDefs,
     resolvers,
+    // @ts-ignore
+    datasources: () => {
+      return {
+        user: UserDataSource,
+      };
+    },
     plugins: [
       ApolloServerPluginDrainHttpServer({ httpServer }),
       // ? https://github.com/apollographql/apollo-server/commit/d1b5b6abffdaa0440c7e95aa598a5d5a37b7066a
@@ -48,8 +59,36 @@ async function start() {
     // ? https://www.apollographql.com/docs/apollo-server/integrations/building-integrations/#overviews
     expressMiddleware(server, {
       context: async (context) => {
-        console.log({ context });
-        return { headers: context.req.headers };
+        const headers = context.req.headers;
+        const authorization = headers.authorization;
+        if (!authorization) {
+          return {
+            user: null,
+            res: context.res,
+            models: { user: User, post: Post },
+            datasources: {
+              users: new UserDataSource(),
+              posts: new PostDataSource(),
+            },
+          };
+        }
+        const decoded = jwt.verify(authorization, process.env.JWT_SECRET!) as {
+          id: string;
+          username: string;
+        };
+        const user = await User.findById(decoded.id);
+        return {
+          user: user,
+          res: context.res,
+          models: {
+            user: User,
+            post: Post,
+          },
+          datasources: {
+            users: new UserDataSource(),
+            posts: new PostDataSource(),
+          },
+        };
       },
     })
   );
