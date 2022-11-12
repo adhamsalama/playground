@@ -2,30 +2,42 @@ import { DataSource, DataSourceConfig } from "apollo-datasource";
 import { Types } from "mongoose";
 import { User } from "../models/user";
 import { Context } from "../types/context";
-
+import DataLoader from "dataloader";
+import { IUser } from "../types/user";
 export class UserDataSource extends DataSource<Context> {
-  initialize(config: DataSourceConfig<Context>): void | Promise<void> {
-    console.log({ config });
+  private loaders: {
+    user: DataLoader<string, IUser>;
+  };
+  constructor() {
+    super();
+    this.loaders = {
+      user: new DataLoader(async (keys) => {
+        const users = await User.find({
+          _id: { $in: keys },
+        });
+        const results = keys.map((key) => {
+          const match = users.find((Post) => Post._id.toString() === key);
+          if (!match) throw new Error("Something went wrong");
+          return match;
+        });
+        return results;
+      }),
+    };
   }
-  findById(id: string | Types.ObjectId) {
-    return User.findById(id);
+
+  async findById(id: string | Types.ObjectId) {
+    // return User.findById(id);
+    return await this.loaders.user.load(String(id));
   }
-  getAll() {
-    return User.find({});
+  async getAll() {
+    return await User.find({});
   }
   getByUsername(username: string) {
     return User.findOne({ username });
   }
   search(query: string) {
     return User.find({
-      $or: [
-        {
-          firstName: query,
-        },
-        {
-          lastName: query,
-        },
-      ],
+      username: query,
     });
   }
 }

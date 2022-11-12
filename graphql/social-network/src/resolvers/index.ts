@@ -14,6 +14,9 @@ export const resolvers: Resolvers<Context> = {
       return result;
     },
     posts: async (_, __, context) => context.datasources.posts.getAll(),
+    // @ts-ignore
+    postsByIds: (_, { ids }, context) =>
+      context.datasources.posts.getByIds(ids),
     user: async (_, { id }, context) => context.datasources.users.findById(id),
     users: async (_, __, context) => context.datasources.users.getAll(),
     getCurrentUser: async (_, __, context) =>
