@@ -23,15 +23,9 @@ async function start() {
   const httpServer = http.createServer(app);
 
   // Set up Apollo Server
-  const server = new ApolloServer<Context>({
+  const server = new ApolloServer({
     typeDefs,
     resolvers,
-    // @ts-ignore
-    datasources: () => {
-      return {
-        user: UserDataSource,
-      };
-    },
     plugins: [
       ApolloServerPluginDrainHttpServer({ httpServer }),
       // ? https://github.com/apollographql/apollo-server/commit/d1b5b6abffdaa0440c7e95aa598a5d5a37b7066a

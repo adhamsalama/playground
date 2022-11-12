@@ -1,34 +1,52 @@
 import { DataSource, DataSourceConfig } from "apollo-datasource";
+import { Types } from "mongoose";
 import { Post } from "../models/post";
 import { Context } from "../types/context";
-import { Types } from "mongoose";
-
+import DataLoader from "dataloader";
+import { IPost } from "../types/post";
 export class PostDataSource extends DataSource<Context> {
-  initialize(config: DataSourceConfig<Context>): void | Promise<void> {
-    console.log({ config });
+  private loaders: {
+    post: DataLoader<string, IPost>;
+  };
+  constructor() {
+    console.log("post loader");
+    super();
+    this.loaders = {
+      post: new DataLoader(async (keys) => {
+        const Posts = await Post.find({
+          _id: { $in: keys },
+        });
+        const results = keys.map((key) => {
+          const match = Posts.find((Post) => Post._id.toString() === key);
+          if (!match) throw new Error("Something went wrong");
+          return match;
+        });
+        return results;
+      }),
+    };
   }
-  findById(id: string | Types.ObjectId) {
-    return Post.findById(id);
+
+  async findById(id: string | Types.ObjectId) {
+    // return Post.findById(id);
+    return this.loaders.post.load(String(id));
   }
-  getAll() {
+  getByUserId(id: string | Types.ObjectId) {
+    return Post.find({ user: String(id) });
+  }
+
+  async getAll() {
     return Post.find({});
   }
   getByTitle(title: string) {
     return Post.findOne({ title });
   }
-  getByUserId(id: string) {
-    return Post.find({ user: id });
+  getByIds(ids: string[]) {
+    // return Post.find({ _id: { $in: ids } });
+    return this.loaders.post.loadMany(ids);
   }
   search(query: string) {
     return Post.find({
-      $or: [
-        {
-          title: query,
-        },
-        {
-          content: query,
-        },
-      ],
+      title: query,
     });
   }
 }
