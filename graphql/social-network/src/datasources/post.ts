@@ -7,6 +7,7 @@ import { IPost } from "../types/post";
 export class PostDataSource extends DataSource<Context> {
   private loaders: {
     post: DataLoader<string, IPost>;
+    postByUserId: DataLoader<string, IPost[]>;
   };
   constructor() {
     console.log("post loader");
@@ -23,6 +24,16 @@ export class PostDataSource extends DataSource<Context> {
         });
         return results;
       }),
+      postByUserId: new DataLoader(async (keys) => {
+        const posts = await Post.find({
+          user: { $in: keys },
+        });
+        const results = keys.map((key) => {
+          const match = posts.filter((post) => post.user.toString() === key);
+          return match;
+        });
+        return results;
+      }),
     };
   }
 
@@ -31,7 +42,8 @@ export class PostDataSource extends DataSource<Context> {
     return this.loaders.post.load(String(id));
   }
   getByUserId(id: string | Types.ObjectId) {
-    return Post.find({ user: String(id) });
+    // return Post.find({ user: String(id) });
+    return this.loaders.postByUserId.load(String(id));
   }
 
   async getAll() {
@@ -40,9 +52,13 @@ export class PostDataSource extends DataSource<Context> {
   getByTitle(title: string) {
     return Post.findOne({ title });
   }
-  getByIds(ids: string[]) {
+  async getByIds(ids: string[]) {
     // return Post.find({ _id: { $in: ids } });
-    return this.loaders.post.loadMany(ids);
+    const posts = (await this.loaders.post.loadMany(ids)).map((post) => {
+      if (post instanceof Error) throw new Error("Post is Error"); // ? To fix TypeScript type error
+      return post;
+    });
+    return posts;
   }
   search(query: string) {
     return Post.find({
