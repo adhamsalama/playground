@@ -23,4 +23,7 @@ export const resolvers: Resolvers = {
       };
     },
   },
+  User: {
+    products: async (user) => await Product.find({ owner: user.id }),
+  },
 };
