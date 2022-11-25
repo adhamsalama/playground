@@ -99,6 +99,7 @@ var favorites = [
           }
         }
       },
-      { $sort: { normalized_rating: -1 } },
-      { $limit: 1 }
+      { $sort: { normalized_rating: 1 } },
     ]
+
+db.movies.aggregate(pipeline)
