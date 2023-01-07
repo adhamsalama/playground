@@ -33,8 +33,15 @@ fn main() {
 
     let r3 = &mut s; // no problem
     println!("{}", r3);
-    // str(s1);
-    let i = &"aaa"[..];
+    let mut a = 69;
+    let b = &mut a;
+    *b = 420;
+    let implicit_pointer_dereference = b.clone();
+    let explicit_pointer_dereferrnce = (*b).clone();
+    println!(
+        "{}",
+        implicit_pointer_dereference == explicit_pointer_dereferrnce
+    );
 }
 fn push(s: &mut String) {
     s.push_str("ooo");
