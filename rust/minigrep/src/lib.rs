@@ -1,3 +1,7 @@
+//! # minigrep
+//!
+//! `minigrep` is a toy project to practice the fundamentals of the Rust programming laguage.
+
 use std::env;
 use std::error::Error;
 use std::fs;
