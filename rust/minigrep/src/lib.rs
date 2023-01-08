@@ -64,7 +64,19 @@ pub fn search<'a>(query: &str, contents: &'a str) -> Vec<&'a str> {
         .filter(|line| line.contains(query))
         .collect()
 }
-fn search_case_insensitive<'a>(query: &str, contents: &'a str) -> Vec<&'a str> {
+
+/// Searches for a query in a string (case insensitive).
+///
+/// # Examples
+///
+/// ```
+/// use minigrep::search_case_insensitive;
+/// assert_eq!(vec!["needle.", "A needle in a heystack."], search_case_insensitive("nEeDle", "\
+/// I am searching for a
+/// needle.
+/// A needle in a heystack."));
+/// ```
+pub fn search_case_insensitive<'a>(query: &str, contents: &'a str) -> Vec<&'a str> {
     contents
         .lines()
         // Have to use & here because to_lowercase() returns a new String, so contains takes ownership of it
