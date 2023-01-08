@@ -1,7 +1,6 @@
 use std::fmt;
-#[derive(Debug)]
 struct Person {
-    name: &'static str,
+    name: String,
     age: i32,
 }
 
@@ -10,31 +9,24 @@ impl fmt::Display for Person {
         write!(f, "Name: {}, Age: {}.", self.name, self.age)
     }
 }
+impl Person {
+    // This is like a class method is Python
+    fn empty() -> Self {
+        Self {
+            name: String::from(""),
+            age: 0,
+        }
+    }
+}
 fn main() {
-    let adhom = Person {
-        name: "adhom",
+    let mut user1 = Person {
+        name: String::from("adhom"),
         age: 23,
     };
-    println!("{}", adhom);
-    println!("Name: {}, Age: {}", adhom.name, adhom.age);
-    let mut arr: [i32; 7] = [1, 2, 3, 4, 5, 6, 0];
-    print_arr(&mut arr);
-    reverse_array(&mut arr);
-    print_arr(&mut arr);
-}
-
-fn reverse_array(arr: &mut [i32]) {
-    let n = arr.len() - 1;
-    for i in 0..arr.len() / 2 {
-        let temp = arr[i];
-        arr[i] = arr[n - i];
-        arr[n - i] = temp;
-    }
-}
-
-fn print_arr(arr: &[i32]) {
-    for i in 0..arr.len() {
-        print!("{},  ", arr[i]);
-    }
-    println!();
+    let user2 = Person { age: 33, ..user1 };
+    user1.name = String::from("Other name");
+    let user3 = Person::empty();
+    println!("{}", user1);
+    println!("{}", user2);
+    println!("{}", user3);
 }
