@@ -43,7 +43,17 @@ impl Config {
         })
     }
 }
-
+/// Searches for a query in a string.
+///
+/// # Examples
+///
+/// ```
+/// use minigrep::search;
+/// assert_eq!(vec!["needle.", "A needle in a heystack."], search("needle", "\
+/// I am searching for a
+/// needle.
+/// A needle in a heystack."));
+/// ```
 pub fn search<'a>(query: &str, contents: &'a str) -> Vec<&'a str> {
     contents
         .lines()
