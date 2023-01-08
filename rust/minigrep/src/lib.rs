@@ -52,7 +52,7 @@ impl Config {
 /// # Examples
 ///
 /// ```
-/// use minigrep::search;
+/// use adhom_minigrep::search;
 /// assert_eq!(vec!["needle.", "A needle in a heystack."], search("needle", "\
 /// I am searching for a
 /// needle.
@@ -70,7 +70,7 @@ pub fn search<'a>(query: &str, contents: &'a str) -> Vec<&'a str> {
 /// # Examples
 ///
 /// ```
-/// use minigrep::search_case_insensitive;
+/// use adhom_minigrep::search_case_insensitive;
 /// assert_eq!(vec!["needle.", "A needle in a heystack."], search_case_insensitive("nEeDle", "\
 /// I am searching for a
 /// needle.
