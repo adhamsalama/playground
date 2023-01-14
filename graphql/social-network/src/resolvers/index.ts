@@ -22,8 +22,8 @@ export const resolvers: Resolvers<Context> = {
       context.user ? context.user : null,
   },
   Mutation: {
-    createUser: mutations.Mutation?.createUser,
-    createPost: mutations.Mutation?.createPost,
+    createUser: mutations.createUser,
+    createPost: mutations.createPost,
   },
   Post: {
     user: async (post, _, context) => {

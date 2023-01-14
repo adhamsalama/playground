@@ -5,13 +5,15 @@ import jwt from "jsonwebtoken";
 
 export const creatUserMutation: MutationResolvers<Context> = {
   createUser: async (_, { input }, context) => {
-    const user = new User({ ...input });
-    await user.save();
+    const user = await context.datasources.users.create(input);
+    if (!user.ok) {
+      throw new Error(user.val);
+    }
     const token = jwt.sign(
-      { ...user.toJSON(), id: user.id },
+      { ...user.val, id: user.val.id },
       process.env.JWT_SECRET!
     );
     context.res.setHeader("authorization", token);
-    return user;
+    return user.val;
   },
 };
