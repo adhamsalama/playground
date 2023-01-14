@@ -35,5 +35,4 @@ input CreateUserInput {
 input CreatePostInput {
   title: String!
   content: String!
-  userId: ID!
 }

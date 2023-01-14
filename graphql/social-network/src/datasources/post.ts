@@ -66,8 +66,12 @@ export class PostDataSource extends DataSource<Context> {
       title: query,
     });
   }
-  async create(data: CreatePostInput) {
-    const post = new Post(data);
+  async create(data: CreatePostInput, userId: string) {
+    const post = new Post({
+      title: data.title,
+      content: data.content,
+      user: userId,
+    });
     await post.save();
     return post;
   }
