@@ -10,7 +10,7 @@ export class PostDataSource extends DataSource<Context> {
     postByUserId: DataLoader<string, IPost[]>;
   };
   constructor() {
-    console.log("post loader");
+    // console.log("post loader");
     super();
     this.loaders = {
       post: new DataLoader(async (keys) => {
