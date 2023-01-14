@@ -13,10 +13,15 @@ import jwt from "jsonwebtoken";
 import { Post } from "./models/post";
 import { UserDataSource } from "./datasources/user";
 import { PostDataSource } from "./datasources/post";
+import { applyMiddleware } from "graphql-middleware";
+import { permissions } from "./middleware";
+import { makeExecutableSchema } from "@graphql-tools/schema";
 
 async function start() {
   process.env.JWT_SECRET = "secret";
-  const typeDefs = readFileSync("src/schema.graphql", "utf-8");
+  let typeDefs = readFileSync("src/schema.graphql", "utf-8");
+  let schema = makeExecutableSchema({ typeDefs, resolvers });
+  let schemaWithMiddleWare = applyMiddleware(schema, permissions);
 
   const app = express();
 
@@ -24,8 +29,9 @@ async function start() {
 
   // Set up Apollo Server
   const server = new ApolloServer({
-    typeDefs,
-    resolvers,
+    // typeDefs,
+    schema: schemaWithMiddleWare,
+    // resolvers,
     plugins: [
       ApolloServerPluginDrainHttpServer({ httpServer }),
       // ? https://github.com/apollographql/apollo-server/commit/d1b5b6abffdaa0440c7e95aa598a5d5a37b7066a
