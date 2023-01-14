@@ -1,9 +1,10 @@
-import { DataSource, DataSourceConfig } from "apollo-datasource";
+import { DataSource } from "apollo-datasource";
 import { Types } from "mongoose";
 import { Post } from "../models/post";
 import { Context } from "../types/context";
 import DataLoader from "dataloader";
 import { IPost } from "../types/post";
+import { CreatePostInput } from "../generated/graphql";
 export class PostDataSource extends DataSource<Context> {
   private loaders: {
     post: DataLoader<string, IPost>;
@@ -64,5 +65,10 @@ export class PostDataSource extends DataSource<Context> {
     return Post.find({
       title: query,
     });
+  }
+  async create(data: CreatePostInput) {
+    const post = new Post(data);
+    await post.save();
+    return post;
   }
 }
